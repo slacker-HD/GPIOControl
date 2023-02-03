@@ -13,7 +13,6 @@ void initColor()
 
 void paintWindow()
 {
-    struct winsize w;
     int maxx, maxy;
     getmaxyx(stdscr, maxy, maxx);
     refresh();
