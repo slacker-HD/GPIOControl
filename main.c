@@ -1,6 +1,6 @@
 #include "./includes/main.h"
 #include "./includes/mainui.h"
-
+#include "./includes/GPIOact.h"
 void sig_winch(int signum)
 {
     endwin();
@@ -10,27 +10,9 @@ void sig_winch(int signum)
 
 int main(int argc, char *argv[])
 {
-    setlocale(LC_ALL, "");
+    initUI();
     signal(SIGWINCH, sig_winch);
-    initscr();
-    start_color();
-    noecho();
-    cbreak();
-    keypad(stdscr, TRUE);
-    refresh();
-    curs_set(0);
-    initColor();
-    initWin();
-    initPanel();
-    paintWindow();
-    while (1)
-    {
-        int c = fgetc(stdin);
-        if (c == 'q')
-        {
-            break;
-        }
-    }
+    inputLoop();
     endwin();
     return 0;
 }
