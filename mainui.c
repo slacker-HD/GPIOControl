@@ -135,11 +135,15 @@ void _command(int nCmd)
 
     case eUCMute:
     {
-        wattron(_bottomWin, COLOR_PAIR(2));
-        mvwaddstr(_bottomWin, 5, 1, "[ |< ]  [暂停]  [停止]  [ >| ]  [mute]");
+        wattron(_bottomWin, COLOR_PAIR(1));
+        mvwaddstr(_bottomWin, 3, 34, "MUTE");
         wrefresh(_bottomWin);
+        wattroff(_bottomWin, COLOR_PAIR(1));
+
         usleep(200 * 1000);
-        mvwaddstr(_bottomWin, 5, 1, "[ |< ]  [暂停]  [停止]  [ >| ]  [MUTE]");
+        wattron(_bottomWin, COLOR_PAIR(2));
+
+        mvwaddstr(_bottomWin, 3, 34, "MUTE");
         wattroff(_bottomWin, COLOR_PAIR(2));
         wrefresh(_bottomWin);
     }
@@ -153,90 +157,21 @@ void MouseHint(MEVENT *event)
     {
         return;
     }
+
     wattron(_topWin, COLOR_PAIR(1));
     mvwprintw(_topWin, 2, 1, "鼠标点击了第%d行，第%d列", event->y, event->x);
     wattroff(_topWin, COLOR_PAIR(1));
     wrefresh(_topWin);
 
-    // int x = event->x;
-    // int y = event->y;
-    // if (y >= STD_HEG + 3 && y <= LINES - 5)
-    // {
-    //     if (x >= 4 && x <= STD_WID - 2)
-    //     {
-    //         int nOffset = y - (STD_HEG + 3);
-    //         int nIndex = top_row(m_menu) + nOffset;
-    //         MenuToSel(nIndex);
-    //         wrefresh(m_wins[2]);
-    //         if (event->bstate & BUTTON1_DOUBLE_CLICKED)
-    //         {
-    //             m_nCurSel = nIndex;
-    //             SendMgrMsg(MSG_FILE, 0, (LPARAM)m_vctMenu[m_nCurSel].strPath.c_str());
-    //         }
-    //     }
-    // }
-    // if ((event->bstate & BUTTON1_CLICKED) == 0)
-    // {
-    //     return;
-    // }
-    // if (y == LINES - 3)
-    // {
-    //     if (x >= 3 && x <= 7) // mode
-    //     {
-    //         Command(eUCMode);
-    //     }
-    //     else if (x >= 11 && x <= 15) // list
-    //     {
-    //         Command(eUCList);
-    //     }
-    //     else if (x >= 19 && x <= 23) // lrc dir
-    //     {
-    //         Command(eUCLrcd);
-    //     }
-    // }
-    // else if (y == 4)
-    // {
-    //     if (x >= 3 && x <= 23) // volum
-    //     {
-    //         int nPercent = (x - 3) * 5;
-    //         mvwhline(m_wins[1], 3, 2, '-', 21);
-    //         mvwaddch(m_wins[1], 3, x - 1, '$');
-    //         mvwprintw(m_wins[1], 3, 24, "(%3d%)", nPercent);
-    //         wrefresh(m_wins[1]);
-    //         SendMgrMsg(MSG_VOLUM, 0, (LPARAM)nPercent);
-    //     }
-    // }
-    // else if (y == 5)
-    // {
-    //     if (x >= 2 && x <= STD_WID + 2) // pos
-    //     {
-    //         int nPercent = (x - 2) * 100 / STD_WID;
-    //         SendMgrMsg(MSG_SETPOS, 0, (LPARAM)nPercent);
-    //     }
-    // }
-    // else if (y == 6)
-    // {
-    //     if (x >= 3 && x <= 7) // prev
-    //     {
-    //         Command(eUCPrev);
-    //     }
-    //     else if (x >= 11 && x <= 15) // play
-    //     {
-    //         Command(eUCPlay);
-    //     }
-    //     else if (x >= 19 && x <= 23) // stop
-    //     {
-    //         Command(eUCStop);
-    //     }
-    //     else if (x >= 27 && x <= 31) // next
-    //     {
-    //         Command(eUCNext);
-    //     }
-    //     else if (x >= 35 && x <= 39) // mute
-    //     {
-    //         Command(eUCMute);
-    //     }
-    // }
+    int x = event->x;
+    int y = event->y;
+    if (y == 8)
+    {
+        if (x >= 34 && x <= 37)
+        {
+            _command(eUCMute);
+        }
+    }
 }
 
 void inputLoop()
@@ -261,11 +196,11 @@ void inputLoop()
             MEVENT event;
             if (getmouse(&event) == OK)
             {
-                // if ((event.bstate & BUTTON1_CLICKED) || (event.bstate & BUTTON1_DOUBLE_CLICKED))
-                // {
-                MouseHint(&event);
+                if ((event.bstate & BUTTON1_CLICKED) || (event.bstate & BUTTON1_DOUBLE_CLICKED))
+                {
+                    MouseHint(&event);
+                }
             }
-            // }
         }
         break;
         }
