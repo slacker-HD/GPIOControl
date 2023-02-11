@@ -197,7 +197,7 @@ void InputLoop()
         case KEY_MOUSE:
         {
             MEVENT event;
-            if (getmouse(&event) == OK && isSmallWindow)
+            if (getmouse(&event) == OK && !isSmallWindow)
             {
                 if ((event.bstate & BUTTON1_CLICKED) || (event.bstate & BUTTON1_DOUBLE_CLICKED))
                 {
