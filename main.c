@@ -1,18 +1,20 @@
 #include "./includes/main.h"
 #include "./includes/mainui.h"
 #include "./includes/GPIOact.h"
+
 void sig_winch(int signum)
 {
     endwin();
     refresh();
-    paintWindow();
+    PaintWindow();
 }
 
 int main(int argc, char *argv[])
 {
-    initUI();
+    InitUI();
+    PaintWindow();
     signal(SIGWINCH, sig_winch);
-    inputLoop();
+    InputLoop();
     endwin();
     return 0;
 }

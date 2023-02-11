@@ -5,24 +5,9 @@
 WINDOW *_topWin, *_bottomWin, *_smallWin;
 PANEL *_topPanel, *_bottomPanel, *_smallPanel;
 
-void initUI()
-{
-    setlocale(LC_ALL, "");
-    initscr();
-    start_color();
-    noecho();
-    cbreak();
-    keypad(stdscr, TRUE);
-    mousemask(ALL_MOUSE_EVENTS, NULL);
-    refresh();
-    curs_set(0);
-    initColor();
-    initWin();
-    initPanel();
-    paintWindow();
-}
+bool isSmallWindow;
 
-void initColor()
+void _initColor()
 {
     if (has_colors())
     {
@@ -73,32 +58,7 @@ void _paintSmallWindow(int maxy, int maxx)
     wnoutrefresh(_smallWin);
 }
 
-void paintWindow()
-{
-    int maxx, maxy;
-    getmaxyx(stdscr, maxy, maxx);
-    refresh();
-    if (maxy < TOPWINHEIGHT + 5)
-    {
-        show_panel(_smallPanel);
-        hide_panel(_topPanel);
-        hide_panel(_bottomPanel);
-        _paintSmallWindow(maxy, maxx);
-    }
-    else
-    {
-        hide_panel(_smallPanel);
-        show_panel(_topPanel);
-        show_panel(_bottomPanel);
-
-        _paintTopWindow(maxy, maxx);
-        _paintBottomWindow(maxy, maxx);
-    }
-    update_panels();
-    doupdate();
-}
-
-void initWin()
+void _initWin()
 {
     int maxx, maxy;
     getmaxyx(stdscr, maxy, maxx);
@@ -116,7 +76,7 @@ void initWin()
     wrefresh(_smallWin);
 }
 
-void initPanel()
+void _initPanel()
 {
     _topPanel = new_panel(_topWin);
     _bottomPanel = new_panel(_bottomWin);
@@ -126,6 +86,49 @@ void initPanel()
     show_panel(_bottomPanel);
     update_panels();
     doupdate();
+}
+
+void PaintWindow()
+{
+    int maxx, maxy;
+    getmaxyx(stdscr, maxy, maxx);
+    refresh();
+    if (maxy < TOPWINHEIGHT + 5)
+    {
+        show_panel(_smallPanel);
+        hide_panel(_topPanel);
+        hide_panel(_bottomPanel);
+        _paintSmallWindow(maxy, maxx);
+        isSmallWindow = true;
+    }
+    else
+    {
+        hide_panel(_smallPanel);
+        show_panel(_topPanel);
+        show_panel(_bottomPanel);
+
+        _paintTopWindow(maxy, maxx);
+        _paintBottomWindow(maxy, maxx);
+        isSmallWindow = false;
+    }
+    update_panels();
+    doupdate();
+}
+
+void InitUI()
+{
+    setlocale(LC_ALL, "");
+    initscr();
+    start_color();
+    noecho();
+    cbreak();
+    keypad(stdscr, TRUE);
+    mousemask(ALL_MOUSE_EVENTS, NULL);
+    refresh();
+    curs_set(0);
+    _initColor();
+    _initWin();
+    _initPanel();
 }
 
 void _command(int nCmd)
@@ -151,7 +154,7 @@ void _command(int nCmd)
     }
 }
 
-void MouseHint(MEVENT *event)
+void _mouseHint(MEVENT *event)
 {
     if (!event)
     {
@@ -174,7 +177,7 @@ void MouseHint(MEVENT *event)
     }
 }
 
-void inputLoop()
+void InputLoop()
 {
     int c;
     while ((c = getch()) != 'q')
@@ -194,11 +197,11 @@ void inputLoop()
         case KEY_MOUSE:
         {
             MEVENT event;
-            if (getmouse(&event) == OK)
+            if (getmouse(&event) == OK && isSmallWindow)
             {
                 if ((event.bstate & BUTTON1_CLICKED) || (event.bstate & BUTTON1_DOUBLE_CLICKED))
                 {
-                    MouseHint(&event);
+                    _mouseHint(&event);
                 }
             }
         }
