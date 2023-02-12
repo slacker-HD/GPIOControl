@@ -1,7 +1,9 @@
 #include "./includes/mainui.h"
 
-#define TOPWINHEIGHT 5
-
+#define TOPWINHEIGHT 10
+#define BOTOMWINMINHEIGHT 9
+#define MINWIDTH 70
+#define GPIOTEXTWIDTH 59
 WINDOW *_topWin, *_bottomWin, *_smallWin;
 PANEL *_topPanel, *_bottomPanel, *_smallPanel;
 
@@ -23,11 +25,11 @@ void _paintBottomWindow(int maxy, int maxx)
     mvwin(_bottomWin, maxy - TOPWINHEIGHT, 0);
     wattron(_bottomWin, COLOR_PAIR(2));
     box(_bottomWin, 0, 0);
-    mvwhline(_bottomWin, 1, 2, '-', 21);
-    mvwaddch(_bottomWin, 1, 1, '[');
-    mvwaddch(_bottomWin, 1, 23, ']');
-    mvwaddstr(_bottomWin, 1, 24, "(???%)");
-    mvwaddstr(_bottomWin, 1, 30, "(0:00:00)");
+    // mvwhline(_bottomWin, 1, 2, '-', 21);
+    // mvwaddch(_bottomWin, 1, 1, '[');
+    // mvwaddch(_bottomWin, 1, 23, ']');
+    // mvwaddstr(_bottomWin, 1, 24, "(???%)");
+    // mvwaddstr(_bottomWin, 1, 30, "(0:00:00)");
     mvwhline(_bottomWin, 2, 1, ':', 40 - 2);
     mvwaddstr(_bottomWin, 3, 1, "[ |< ]  [暂停]  [停止]  [ >| ]  [MUTE]");
     mvwprintw(_bottomWin, (maxy - TOPWINHEIGHT) / 2, 1, "%d列", maxx);
@@ -37,11 +39,19 @@ void _paintBottomWindow(int maxy, int maxx)
 
 void _paintTopWindow(int maxy, int maxx)
 {
+    int startx;
     werase(_topWin);
     wresize(_topWin, TOPWINHEIGHT, maxx);
     mvwin(_topWin, 0, 0);
     wattron(_topWin, COLOR_PAIR(1));
     wattron(_topWin, A_BOLD);
+    startx = (maxx - GPIOTEXTWIDTH) / 2;
+
+    mvwhline(_topWin, 4, startx, '-', GPIOTEXTWIDTH);
+    mvwhline(_topWin, 5, startx, '-', GPIOTEXTWIDTH);
+    mvwaddstr(_topWin, 6, startx, " 1  3  5  7  9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39");
+    mvwaddstr(_topWin, 3, startx, " 2  4  6  8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40");
+
     mvwprintw(_topWin, TOPWINHEIGHT / 2, 1, "%d行", maxy);
     box(_topWin, 0, 0);
     wattroff(_topWin, COLOR_PAIR(1));
@@ -93,7 +103,7 @@ void PaintWindow()
     int maxx, maxy;
     getmaxyx(stdscr, maxy, maxx);
     refresh();
-    if (maxy < TOPWINHEIGHT + 5)
+    if (maxy < TOPWINHEIGHT + BOTOMWINMINHEIGHT + 1 || maxx < MINWIDTH)
     {
         show_panel(_smallPanel);
         hide_panel(_topPanel);
@@ -162,13 +172,13 @@ void _mouseHint(MEVENT *event)
     }
 
     wattron(_topWin, COLOR_PAIR(1));
-    mvwprintw(_topWin, 2, 1, "鼠标点击了第%d行，第%d列", event->y, event->x);
+    mvwprintw(_topWin, 7, 1, "鼠标点击了第%d行，第%d列", event->y, event->x);
     wattroff(_topWin, COLOR_PAIR(1));
     wrefresh(_topWin);
 
     int x = event->x;
     int y = event->y;
-    if (y == 8)
+    if (y == TOPWINHEIGHT + 3)
     {
         if (x >= 34 && x <= 37)
         {
@@ -192,7 +202,9 @@ void InputLoop()
         break;
         case '.':
         {
-            _command(eUCNext);
+            endwin();
+            refresh();
+            PaintWindow();
         }
         case KEY_MOUSE:
         {
