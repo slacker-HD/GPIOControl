@@ -41,8 +41,8 @@ void _paintTopWindow(int maxy, int maxx)
 {
     int startx;
     werase(_topWin);
-    wresize(_topWin, TOPWINHEIGHT, maxx);
-    mvwin(_topWin, 0, 0);
+    wresize(_topWin, TOPWINHEIGHT, maxx-30);
+    mvwin(_topWin, 0, 30);
     wattron(_topWin, COLOR_PAIR(1));
     wattron(_topWin, A_BOLD);
     startx = (maxx - GPIOTEXTWIDTH) / 2;
